@@ -1,0 +1,16 @@
+{
+  "name": "packmate",
+  "version": "1.0.0",
+  "description": "📦 Packmate - Smart Package Manager",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "packmate": "./bin/index.js",
+    "packmate-init": "./bin/index.js --init"
+  },
+  "dependencies": {
+    "boxen": "^8.0.1"
+  }
+}

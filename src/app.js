@@ -1,8 +1,9 @@
 import chalk from 'chalk';
 import { basename, join } from 'path';
 import { createConfigFile } from './utils/configUtils.js';
+import { installDependencies, updateDependencyFile, validateDependencies } from './utils/dependencyUtils.js';
 import { createDirectory } from './utils/fileUtils.js';
-import { selectLanguage, selectPackageManager, selectProjectStructure } from './utils/promptUtils.js';
+import { selectDependencies, selectLanguage, selectPackageManager, selectProjectStructure } from './utils/promptUtils.js';
 import { createGitIgnore, createProjectStructure, createReadme } from './utils/structureUtils.js';
 
 // Helper function to display success message
@@ -51,6 +52,9 @@ class PackmateApp {
           
           // Step 4: Project Structure Selection
           await this.selectProjectStructure();
+          
+          // Step 5: Dependencies Selection
+          await this.selectDependencies();
           
           console.log('\nProject setup complete!');
         } else {
@@ -157,7 +161,120 @@ class PackmateApp {
       throw err;
     }
   }
+
+  async selectDependencies() {
+    try {
+      console.log(chalk.yellow('\n🔹 Step 5: Select Dependencies'));
+      
+      // Get structure ID from config
+      const structureId = this.config.structure?.id;
+      
+      if (!structureId) {
+        console.log(`\nNo structure information available. Skipping dependency selection.`);
+        return;
+      }
+      
+      // Select dependencies based on language and structure
+      const selectedDeps = await selectDependencies(this.config.language, structureId);
+      
+      if (selectedDeps.length === 0) {
+        console.log(`\nNo dependencies selected. Skipping installation.`);
+        return;
+      }
+      
+      // Validate dependencies
+      const validDeps = validateDependencies(selectedDeps);
+      
+      if (validDeps.length === 0) {
+        console.log(`\nNo valid dependencies found. Skipping installation.`);
+        return;
+      }
+      
+      console.log(`\nSelected dependencies: ${chalk.bold.blue(validDeps.join(', '))}`);
+      
+      // Update dependency files
+      await updateDependencyFile(
+        this.projectPath, 
+        this.config.language, 
+        this.config.packageManager, 
+        validDeps
+      );
+      success(`Updated dependency configuration files`);
+      
+      // Install dependencies
+      try {
+        await installDependencies(
+          this.projectPath, 
+          this.config.language, 
+          this.config.packageManager, 
+          validDeps
+        );
+        success(`Installed ${validDeps.length} dependencies`);
+      } catch (installError) {
+        console.log(chalk.yellow(`\n⚠️  Dependency installation failed: ${installError.message}`));
+        console.log(chalk.yellow(`You can install them manually later with:`));
+        console.log(chalk.gray(`  cd ${this.projectName}`));
+        console.log(chalk.gray(`  ${getInstallCommand(this.config.language, this.config.packageManager, validDeps)}`));
+      }
+      
+      // Update config with dependency info
+      this.config.dependencies = {
+        selected: validDeps,
+        count: validDeps.length,
+        installed: true
+      };
+      
+      await createConfigFile(this.projectPath, this.config);
+      success('Updated configuration with dependency details');
+      
+    } catch (err) {
+      error(`Failed to select dependencies: ${err.message}`);
+      throw err;
+    }
+  }
 }
+
+const getInstallCommand = (language, packageManager, dependencies) => {
+  const depsString = dependencies.join(' ');
+  
+  switch (language) {
+    case 'Node.js':
+      switch (packageManager) {
+        case 'npm':
+          return `npm install ${depsString}`;
+        case 'yarn':
+          return `yarn add ${depsString}`;
+        case 'pnpm':
+          return `pnpm add ${depsString}`;
+        default:
+          return `npm install ${depsString}`;
+      }
+    
+    case 'Python':
+      switch (packageManager) {
+        case 'pip':
+          return `pip install ${depsString}`;
+        case 'poetry':
+          return `poetry add ${depsString}`;
+        case 'conda':
+          return `conda install ${depsString}`;
+        default:
+          return `pip install ${depsString}`;
+      }
+    
+    case 'Java':
+      return `mvn install`;
+    
+    case 'Rust':
+      return `cargo add ${depsString}`;
+    
+    case 'C++':
+      return `vcpkg install ${depsString}`;
+    
+    default:
+      return `See project documentation`;
+  }
+};
 
 // Start the application when run directly
 const isMain = import.meta.url === `file://${process.argv[1]}`;

@@ -432,6 +432,15 @@ public class HelloController {
         "examples"
       ],
       files: {
+        "Cargo.toml": `[package]
+name = "rust-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"`,
         "src/main.rs": `use std::env;
 
 fn main() {
@@ -474,6 +483,16 @@ mod tests {
         "tests"
       ],
       files: {
+        "Cargo.toml": `[package]
+name = "rust-web"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }`,
         "src/main.rs": `use actix_web::{web, App, HttpServer, Result};
 use serde::{Deserialize, Serialize};
 

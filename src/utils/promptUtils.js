@@ -1,4 +1,5 @@
 import inquirer from 'inquirer';
+import { getDependenciesForStructure, getDependencyCategories } from '../config/dependencies.js';
 import { getPackageManagersForLanguage, languages } from '../config/frameworks.js';
 import { getStructureChoices } from '../config/structures.js';
 
@@ -63,4 +64,78 @@ export const selectProjectStructure = async (language) => {
   // Find the selected structure config
   const selectedStructure = structureChoices.find(choice => choice.value === structure);
   return selectedStructure ? selectedStructure.config : null;
+};
+
+export const selectDependencies = async (language, structureId) => {
+  const dependencyConfig = getDependenciesForStructure(language, structureId);
+  
+  if (!dependencyConfig) {
+    console.log(`\nNo predefined dependencies available for ${language} ${structureId}.`);
+    return await getCustomDependencies();
+  }
+  
+  const { dependencies } = dependencyConfig;
+  const categories = getDependencyCategories(dependencies);
+  
+  // Group dependencies by category for better organization
+  const choices = [];
+  Object.entries(categories).forEach(([category, deps]) => {
+    choices.push(new inquirer.Separator(`\n${category.toUpperCase()}`));
+    deps.forEach(dep => {
+      choices.push({
+        name: `${dep.name} - ${dep.description}`,
+        value: dep.name,
+        checked: dep.category === 'core' || dep.category === 'testing' // Auto-select core and testing deps
+      });
+    });
+  });
+  
+  const { selectedDeps } = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      name: 'selectedDeps',
+      message: `Select dependencies for ${dependencyConfig.name}:`,
+      choices: choices,
+      pageSize: 15
+    }
+  ]);
+  
+  // Ask for custom dependencies
+  const { customDeps } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'customDeps',
+      message: 'Add custom dependencies (comma-separated, optional):',
+      default: ''
+    }
+  ]);
+  
+  // Combine selected and custom dependencies
+  const customDepsList = customDeps
+    .split(',')
+    .map(dep => dep.trim())
+    .filter(dep => dep.length > 0);
+  
+  return [...selectedDeps, ...customDepsList];
+};
+
+const getCustomDependencies = async () => {
+  const { customDeps } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'customDeps',
+      message: 'Enter dependencies (comma-separated):',
+      validate: (input) => {
+        if (!input.trim()) {
+          return 'Please enter at least one dependency';
+        }
+        return true;
+      }
+    }
+  ]);
+  
+  return customDeps
+    .split(',')
+    .map(dep => dep.trim())
+    .filter(dep => dep.length > 0);
 };

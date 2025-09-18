@@ -1,9 +1,11 @@
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import { basename, join } from 'path';
-import { createConfigFile } from './utils/configUtils.js';
+import { createConfigFile, ensureLanguageConfigs } from './utils/configUtils.js';
 import { installDependencies, updateDependencyFile, validateDependencies } from './utils/dependencyUtils.js';
 import { createDirectory } from './utils/fileUtils.js';
-import { selectDependencies, selectLanguage, selectPackageManager, selectProjectStructure } from './utils/promptUtils.js';
+import { initializeGitRepo } from './utils/gitUtils.js';
+import { confirmGitInit, promptProjectMetadata, selectDependencies, selectLanguage, selectPackageManager, selectProjectStructure } from './utils/promptUtils.js';
 import { createGitIgnore, createProjectStructure, createReadme } from './utils/structureUtils.js';
 
 // Helper function to display success message
@@ -46,6 +48,9 @@ class PackmateApp {
       try {
         if (createDirectory(this.projectPath)) {
           success(`Created project directory: ${chalk.bold(this.projectName)}`);
+
+          // Step 2: Project Metadata
+          await this.collectProjectMetadata();
           
           // Step 3: Language/Framework Selection
           await this.selectLanguageAndPackageManager();
@@ -55,6 +60,9 @@ class PackmateApp {
           
           // Step 5: Dependencies Selection
           await this.selectDependencies();
+
+          // Step 6: Final Project Configuration
+          await this.finalizeProjectConfiguration();
           
           console.log('\nProject setup complete!');
         } else {
@@ -71,6 +79,41 @@ class PackmateApp {
     }
   }
 
+  async collectProjectMetadata() {
+    const previousName = this.projectName;
+    const previousPath = this.projectPath;
+
+    const meta = await promptProjectMetadata(this.projectName);
+
+    // If the user changed the project name, rename the directory
+    if (meta.projectName && meta.projectName !== previousName) {
+      const newPath = join(process.cwd(), meta.projectName);
+      try {
+        await fs.move(previousPath, newPath, { overwrite: false });
+        this.projectName = meta.projectName;
+        this.projectPath = newPath;
+        success(`Renamed project directory to: ${chalk.bold(this.projectName)}`);
+      } catch (renameErr) {
+        error(`Failed to rename project directory: ${renameErr.message}`);
+        throw renameErr;
+      }
+    } else {
+      this.projectName = meta.projectName;
+      this.projectPath = previousPath;
+    }
+
+    this.config = {
+      projectName: meta.projectName,
+      version: meta.version,
+      author: meta.author,
+      license: meta.license,
+      description: meta.description,
+      createdAt: new Date().toISOString()
+    };
+    const configPath = await createConfigFile(this.projectPath, this.config);
+    success(`Saved base config to: ${basename(configPath)}`);
+  }
+
   async selectLanguageAndPackageManager() {
     try {
       console.log(chalk.yellow('\n🔹 Step 3: Select Language/Framework'));
@@ -85,10 +128,9 @@ class PackmateApp {
       
       // Store the configuration
       this.config = {
-        projectName: this.projectName,
-        language: language,
-        packageManager: packageManager,
-        createdAt: new Date().toISOString()
+        ...this.config,
+        language,
+        packageManager
       };
       
       const configPath = await createConfigFile(this.projectPath, this.config);
@@ -229,6 +271,37 @@ class PackmateApp {
       
     } catch (err) {
       error(`Failed to select dependencies: ${err.message}`);
+      throw err;
+    }
+  }
+
+  async finalizeProjectConfiguration() {
+    try {
+      console.log(chalk.yellow('\n🔹 Step 6: Project Configuration'));
+      // Ensure language-specific configs exist
+      await ensureLanguageConfigs(this.projectPath, this.config.language);
+      success('Ensured language-specific configuration files');
+
+      // Optionally initialize Git repository
+      const shouldInitGit = await confirmGitInit();
+      if (shouldInitGit) {
+        try {
+          await initializeGitRepo(this.projectPath);
+          success('Initialized Git repository with initial commit');
+          this.config.git = { initialized: true, initialCommit: true };
+          await createConfigFile(this.projectPath, this.config);
+        } catch (gitErr) {
+          console.log(chalk.yellow(`\n⚠️  Git initialization failed: ${gitErr.message}`));
+          console.log(chalk.yellow('You can initialize Git manually later.'));
+          this.config.git = { initialized: false };
+          await createConfigFile(this.projectPath, this.config);
+        }
+      } else {
+        this.config.git = { initialized: false };
+        await createConfigFile(this.projectPath, this.config);
+      }
+    } catch (err) {
+      error(`Failed during final configuration: ${err.message}`);
       throw err;
     }
   }

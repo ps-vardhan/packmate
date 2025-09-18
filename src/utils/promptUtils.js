@@ -3,6 +3,43 @@ import { getDependenciesForStructure, getDependencyCategories } from '../config/
 import { getPackageManagersForLanguage, languages } from '../config/frameworks.js';
 import { getStructureChoices } from '../config/structures.js';
 
+export const promptProjectMetadata = async (initialName = '') => {
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'projectName',
+      message: 'Project name:',
+      default: initialName,
+      validate: (v) => v && v.trim().length > 0 ? true : 'Project name is required'
+    },
+    {
+      type: 'input',
+      name: 'version',
+      message: 'Version:',
+      default: '1.0.0'
+    },
+    {
+      type: 'input',
+      name: 'author',
+      message: 'Author:',
+      default: ''
+    },
+    {
+      type: 'input',
+      name: 'license',
+      message: 'License:',
+      default: 'MIT'
+    },
+    {
+      type: 'input',
+      name: 'description',
+      message: 'Description:',
+      default: ''
+    }
+  ]);
+  return answers;
+};
+
 export const selectLanguage = async () => {
   const { language } = await inquirer.prompt([
     {
@@ -61,7 +98,6 @@ export const selectProjectStructure = async (language) => {
     }
   ]);
   
-  // Find the selected structure config
   const selectedStructure = structureChoices.find(choice => choice.value === structure);
   return selectedStructure ? selectedStructure.config : null;
 };
@@ -77,7 +113,6 @@ export const selectDependencies = async (language, structureId) => {
   const { dependencies } = dependencyConfig;
   const categories = getDependencyCategories(dependencies);
   
-  // Group dependencies by category for better organization
   const choices = [];
   Object.entries(categories).forEach(([category, deps]) => {
     choices.push(new inquirer.Separator(`\n${category.toUpperCase()}`));
@@ -85,7 +120,7 @@ export const selectDependencies = async (language, structureId) => {
       choices.push({
         name: `${dep.name} - ${dep.description}`,
         value: dep.name,
-        checked: dep.category === 'core' || dep.category === 'testing' // Auto-select core and testing deps
+        checked: dep.category === 'core' || dep.category === 'testing'
       });
     });
   });
@@ -100,7 +135,6 @@ export const selectDependencies = async (language, structureId) => {
     }
   ]);
   
-  // Ask for custom dependencies
   const { customDeps } = await inquirer.prompt([
     {
       type: 'input',
@@ -110,7 +144,6 @@ export const selectDependencies = async (language, structureId) => {
     }
   ]);
   
-  // Combine selected and custom dependencies
   const customDepsList = customDeps
     .split(',')
     .map(dep => dep.trim())
@@ -138,4 +171,16 @@ const getCustomDependencies = async () => {
     .split(',')
     .map(dep => dep.trim())
     .filter(dep => dep.length > 0);
+};
+
+export const confirmGitInit = async () => {
+  const { initGit } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'initGit',
+      message: 'Do you want to initialize a Git repository?',
+      default: true
+    }
+  ]);
+  return initGit;
 };

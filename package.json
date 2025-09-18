@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "📦 Packmate - Smart Package Manager",
   "main": "bin/index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,6 +12,12 @@
     "packmate-init": "./bin/index.js --init"
   },
   "dependencies": {
-    "boxen": "^8.0.1"
+    "boxen": "^8.0.1",
+    "chalk": "^5.0.1",
+    "commander": "^11.0.0",
+    "fs-extra": "^11.3.2",
+    "inquirer": "^8.2.4",
+    "ora": "^6.1.0",
+    "update-notifier": "^7.0.0"
   }
 }

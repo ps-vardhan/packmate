@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚀 Packmate</h1>
+  <h1>Packmate</h1>
   <h3>Your Intelligent Project Setup Companion</h3>
   
   <p>
@@ -27,46 +27,47 @@
   </p>
 </div>
 
-## 🎥 Demo
+##  Demo
 
 <div align="center">
   <a href="#">
     <img src="https://via.placeholder.com/800x450/2d2d2d/ffffff?text=Packmate+Demo+Video" alt="Packmate Demo" width="80%">
   </a>
-  <p><em>👆 Click to watch Packmate in action!</em></p>
+  <p><em> Click to watch Packmate in action!</em></p>
 </div>
 
-## ✨ Features
+##  Features
 
 - **Multi-language Support** - Works with Node.js, Python, Java, and more
 - **Smart Suggestions** - Get intelligent package recommendations
 - **Zero Configuration** - Sensible defaults with full customization
-- **Blazing Fast** - Set up a new project in under 30 seconds
 - **Git Integration** - Optional Git repository initialization with .gitignore
-- **Cross-platform** - Works on Windows, macOS, and Linux
 
-## 🚀 Quick Start
+
+##  Quick Start
 
 Get started with Packmate in seconds:
 
 ```bash
-# Install globally
-npm install -g packmate
+# Clone the repo
+git clone https://github.com/ps-vardhan/packmate.git
+cd packmate
 
-# Create a new project
+# Install dependencies
+npm install
+
+# Link globally to use the "packmate" command
+npm link
+
+# Now you can run
 packmate
-```
-
-Or try it out without installation:
-```bash
-npx packmate
 ```
 
 ## 🛠 How It Works
 
 ### 1. Project Initialization
 ```bash
-packmate init my-awesome-project
+packmate
 ```
 
 ### 2. Interactive Setup
@@ -124,14 +125,14 @@ my-project/
 └── README.md
 ```
 
-## 🌟 Why Choose Packmate?
+##  Why Choose Packmate?
 
-- **Time Saver** - Skip the boring setup, start coding immediately
-- **Best Practices** - Follows industry standards and conventions
-- **Extensible** - Customize templates and configurations
-- **Community Driven** - Built by developers, for developers
+- **Instant Setup** – Generate ready-to-code projects in seconds
+- **Smart Dependency Management** – Auto-suggests the right libraries for your stack
+- **Clean Project Structures** – Consistent, scalable, and industry-standard layouts
+- **Multi-Language Support** – Works with Node.js, Python, Java, and more
 
-## 📦 Installation Options
+##  Installation Options
 
 ### Global Installation
 ```bash
@@ -148,49 +149,15 @@ npm install --save-dev packmate
 npx packmate
 ```
 
-## 🛣️ Roadmap
-
-### Upcoming Features
-- [ ] Plugin system for custom templates
-- [ ] More framework integrations
-- [ ] Cloud deployment configurations
-- [ ] Interactive tutorial mode
-- [ ] VS Code/WebStorm integration
-
-### In Progress
-- [x] Core CLI functionality
-- [x] Basic template system
-- [x] Package management
-
-### Completed
-- [x] Initial release
-- [x] Multi-language support
-
-## 🤝 Contributing
+##  Contributing
 
 We love contributions! Here's how you can help:
 1. Fork the repository
 2. Create a feature branch
 3. Submit a pull request
 
-## 📄 License
+##  License
 
 MIT 
 
 ---
-
-<div align="center">
-  Made with by [Your Name]
-</div>
-
- Remote package recommendations (community driven) 🌎
-
-🤝 Contributing
-
-Contributions are always welcome!
-If you’ve got a cool feature idea or want to add support for a new framework — just open a PR.
-
-💡 Inspiration
-
-I built Packmate because I was tired of typing the same setup commands over and over again.
-Think of it as your travel buddy for projects — packs your bags before the trip begins. 🎒✨

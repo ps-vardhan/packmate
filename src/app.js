@@ -32,12 +32,14 @@ class PackmateApp {
 
   async initializeProject() {
     try {
-      // Get project name from command line arguments or prompt
-      this.projectName = process.argv[2];
-      
+      // Accept optional name from argv
+      this.projectName = process.argv[2] || '';
+
+      // Step 2 handles asking for name if missing, but we need a temp path to create dir.
       if (!this.projectName) {
-        error('Please provide a project name. Usage: packmate <project-name>');
-        process.exit(1);
+        // Create a temporary directory name to begin (will be renamed after metadata)
+        const tempName = `packmate-project-${Date.now()}`;
+        this.projectName = tempName;
       }
 
       this.projectPath = join(process.cwd(), this.projectName);
@@ -49,7 +51,7 @@ class PackmateApp {
         if (createDirectory(this.projectPath)) {
           success(`Created project directory: ${chalk.bold(this.projectName)}`);
 
-          // Step 2: Project Metadata
+          // Step 2: Project Metadata (may rename directory)
           await this.collectProjectMetadata();
           
           // Step 3: Language/Framework Selection
@@ -83,9 +85,9 @@ class PackmateApp {
     const previousName = this.projectName;
     const previousPath = this.projectPath;
 
-    const meta = await promptProjectMetadata(this.projectName);
+    const meta = await promptProjectMetadata(previousName.startsWith('packmate-project-') ? '' : previousName);
 
-    // If the user changed the project name, rename the directory
+    // If the user changed or provided the project name, rename the directory
     if (meta.projectName && meta.projectName !== previousName) {
       const newPath = join(process.cwd(), meta.projectName);
       try {
@@ -98,12 +100,12 @@ class PackmateApp {
         throw renameErr;
       }
     } else {
-      this.projectName = meta.projectName;
+      this.projectName = meta.projectName || previousName;
       this.projectPath = previousPath;
     }
 
     this.config = {
-      projectName: meta.projectName,
+      projectName: this.projectName,
       version: meta.version,
       author: meta.author,
       license: meta.license,

@@ -9,7 +9,7 @@
   },
   "bin": {
     "packmate": "./bin/index.js",
-    "packmate-init": "./bin/index.js --init"
+    "pm": "./bin/index.js"
   },
   "dependencies": {
     "boxen": "^8.0.1",

@@ -1,0 +1,24 @@
+{
+  "projectName": "asd",
+  "version": "1.0.0",
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "createdAt": "2025-09-18T16:10:59.938Z",
+  "language": "Node.js",
+  "packageManager": "npm",
+  "structure": {
+    "id": "express-api",
+    "description": "RESTful API with Express.js framework",
+    "directories": 10
+  },
+  "dependencies": {
+    "selected": [
+      "express",
+      "jest",
+      "supertest"
+    ],
+    "count": 3,
+    "installed": true
+  }
+}

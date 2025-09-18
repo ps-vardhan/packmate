@@ -5,6 +5,11 @@ import path from 'path';
 export const installDependencies = async (projectPath, language, packageManager, dependencies) => {
   try {
     const installCommand = getInstallCommand(language, packageManager, dependencies);
+
+    // If there is no direct install command (e.g., Java/C++ where we only update files), skip execution
+    if (!installCommand) {
+      return false;
+    }
     
     console.log(`\nInstalling dependencies with ${packageManager}...`);
     console.log(`Command: ${installCommand}`);
@@ -57,15 +62,14 @@ const getInstallCommand = (language, packageManager, dependencies) => {
       }
     
     case 'Java':
-      // For Java, we need to modify pom.xml or build.gradle
-      // This is handled separately in updateJavaDependencies
+      // For Java, we update pom.xml/build.gradle only; user builds later
       return null;
     
     case 'Rust':
       return `cargo add ${depsString}`;
     
     case 'C++':
-      // C++ dependencies are handled through vcpkg.json or conanfile.txt
+      // For C++, we update vcpkg.json/conanfile.txt only; user installs later
       return null;
     
     default:
@@ -109,7 +113,6 @@ const updatePackageJson = async (projectPath, dependencies) => {
   if (await fs.pathExists(packageJsonPath)) {
     const packageJson = await fs.readJson(packageJsonPath);
     
-    // Add dependencies to package.json
     if (!packageJson.dependencies) {
       packageJson.dependencies = {};
     }
@@ -120,7 +123,6 @@ const updatePackageJson = async (projectPath, dependencies) => {
     
     await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
   } else {
-    // Create basic package.json if it doesn't exist
     const packageJson = {
       name: path.basename(projectPath),
       version: '1.0.0',
@@ -142,13 +144,11 @@ const updatePackageJson = async (projectPath, dependencies) => {
 
 const updatePythonDependencies = async (projectPath, packageManager, dependencies) => {
   if (packageManager === 'poetry') {
-    // For Poetry, we'll add to pyproject.toml
     const pyprojectPath = path.join(projectPath, 'pyproject.toml');
     
     if (await fs.pathExists(pyprojectPath)) {
       let content = await fs.readFile(pyprojectPath, 'utf8');
       
-      // Add dependencies to [tool.poetry.dependencies] section
       if (!content.includes('[tool.poetry.dependencies]')) {
         content += '\n[tool.poetry.dependencies]\n';
       }
@@ -162,7 +162,6 @@ const updatePythonDependencies = async (projectPath, packageManager, dependencie
       await fs.writeFile(pyprojectPath, content);
     }
   } else {
-    // For pip, create/update requirements.txt
     const requirementsPath = path.join(projectPath, 'requirements.txt');
     
     let existingDeps = [];
@@ -183,7 +182,6 @@ const updateJavaDependencies = async (projectPath, packageManager, dependencies)
     if (await fs.pathExists(pomPath)) {
       let content = await fs.readFile(pomPath, 'utf8');
       
-      // Add dependencies to <dependencies> section
       if (content.includes('<dependencies>')) {
         const dependencyXml = dependencies.map(dep => 
           `        <dependency>
@@ -206,7 +204,6 @@ const updateJavaDependencies = async (projectPath, packageManager, dependencies)
     if (await fs.pathExists(buildGradlePath)) {
       let content = await fs.readFile(buildGradlePath, 'utf8');
       
-      // Add dependencies to dependencies block
       const dependencyLines = dependencies.map(dep => 
         `    implementation 'org.springframework.boot:${dep}'`
       ).join('\n');
@@ -229,7 +226,6 @@ const updateCargoToml = async (projectPath, dependencies) => {
   if (await fs.pathExists(cargoTomlPath)) {
     let content = await fs.readFile(cargoTomlPath, 'utf8');
     
-    // Add dependencies to [dependencies] section
     if (!content.includes('[dependencies]')) {
       content += '\n[dependencies]\n';
     }

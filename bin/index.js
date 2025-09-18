@@ -40,24 +40,38 @@ if (args.includes('--help') || args.includes('-h')) {
   process.exit(0);
 }
 
-// Beautified banner at start of initialization
-try {
-  const boxen = (await import('boxen')).default;
-  const bannerText = `PackMate v${version}\n\nPackmate a smart package manager that helps you set up and manage project dependencies with ease.\nSupports multiple languages and generates clean project structures.`;
-  const banner = boxen(bannerText, {
-    padding: 1,
-    margin: 1,
-    borderStyle: 'round',
-    borderColor: 'cyan',
-    title: 'PackMate',
-    titleAlignment: 'center'
-  });
-  console.log(banner);
-} catch {
-  console.log(`\n📦 PackMate v${version}`);
-  console.log('Packmate a smart package manager that helps you set up and manage project dependencies with ease.');
-  console.log('Supports multiple languages and generates clean project structures.');
-}
+// Display the ASCII banner in a box
+const showBanner = async () => {
+  try {
+    const boxen = (await import('boxen')).default;
+    const asciiArt = '██████╗  █████╗  ██████╗██╗  ██╗███╗   ███╗ █████╗ ████████╗███████╗\n██╔══██╗██╔══██╗██╔════╝██║  ██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝\n██████╔╝███████║██║     ███████║██╔████╔██║███████║   ██║   █████╗  \n██╔═══╝ ██╔══██║██║     ██╔══██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  \n██║     ██║  ██║╚██████╗██║  ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗\n╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝';
+    
+    const description = 'A smart package manager that helps you set up and manage project dependencies with ease.\nSupports multiple languages and generates clean project structures.';
+    
+    const banner = boxen(
+      `${asciiArt}\n\n${description}`,
+      {
+        padding: 1,
+        margin: 1,
+        borderStyle: 'round',
+        borderColor: 'cyan',
+        title: `PackMate v${version}`,
+        titleAlignment: 'center'
+      }
+    );
+    
+    console.log(banner);
+  } catch (error) {
+    // Fallback to simple banner if boxen fails
+    console.log('██████╗  █████╗  ██████╗██╗  ██╗███╗   ███╗ █████╗ ████████╗███████╗\n██╔══██╗██╔══██╗██╔════╝██║  ██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝\n██████╔╝███████║██║     ███████║██╔████╔██║███████║   ██║   █████╗  \n██╔═══╝ ██╔══██║██║     ██╔══██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  \n██║     ██║  ██║╚██████╗██║  ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗\n╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝');
+    console.log(`📦 Packmate v${version} - Smart Package Manager`);
+    console.log('A smart package manager that helps you set up and manage project dependencies with ease.');
+    console.log('Supports multiple languages and generates clean project structures.\n');
+  }
+};
+
+// Show the banner
+showBanner();
 
 // Start the application (no-arg allowed; app will prompt for metadata)
 const app = new PackmateApp();

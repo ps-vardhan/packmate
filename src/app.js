@@ -2,7 +2,8 @@ import chalk from 'chalk';
 import { basename, join } from 'path';
 import { createConfigFile } from './utils/configUtils.js';
 import { createDirectory } from './utils/fileUtils.js';
-import { selectLanguage, selectPackageManager } from './utils/promptUtils.js';
+import { selectLanguage, selectPackageManager, selectProjectStructure } from './utils/promptUtils.js';
+import { createGitIgnore, createProjectStructure, createReadme } from './utils/structureUtils.js';
 
 // Helper function to display success message
 const success = (message) => console.log(chalk.green(`✓ ${message}`));
@@ -48,6 +49,9 @@ class PackmateApp {
           // Step 3: Language/Framework Selection
           await this.selectLanguageAndPackageManager();
           
+          // Step 4: Project Structure Selection
+          await this.selectProjectStructure();
+          
           console.log('\nProject setup complete!');
         } else {
           error(`A directory named "${chalk.bold(this.projectName)}" already exists.`);
@@ -88,6 +92,68 @@ class PackmateApp {
       
     } catch (err) {
       error(`Failed to select language/package manager: ${err.message}`);
+      throw err;
+    }
+  }
+
+  async selectProjectStructure() {
+    try {
+      console.log(chalk.yellow('\n🔹 Step 4: Choose Project Structure'));
+      
+      // Select project structure based on language
+      const structureConfig = await selectProjectStructure(this.config.language);
+      
+      if (structureConfig) {
+        console.log(`\nSelected structure: ${chalk.bold.blue(structureConfig.description)}`);
+        
+        // Create the project structure
+        await createProjectStructure(
+          this.projectPath, 
+          structureConfig.structure, 
+          structureConfig.files || {}
+        );
+        
+        success(`Created project structure with ${structureConfig.structure.length} directories`);
+        
+        // Create .gitignore file
+        await createGitIgnore(this.projectPath, this.config.language);
+        success('Created .gitignore file');
+        
+        // Create README.md
+        await createReadme(
+          this.projectPath, 
+          this.projectName, 
+          this.config.language, 
+          structureConfig.structure
+        );
+        success('Created README.md file');
+        
+        // Update config with structure info
+        this.config.structure = {
+          id: structureConfig.id,
+          description: structureConfig.description,
+          directories: structureConfig.structure.length
+        };
+        
+        await createConfigFile(this.projectPath, this.config);
+        success('Updated configuration with structure details');
+        
+      } else {
+        console.log(`\nUsing basic structure for ${this.config.language}`);
+        
+        // Create basic structure
+        const basicStructure = ['src', 'tests', 'docs'];
+        await createProjectStructure(this.projectPath, basicStructure);
+        
+        // Create .gitignore and README
+        await createGitIgnore(this.projectPath, this.config.language);
+        await createReadme(this.projectPath, this.projectName, this.config.language, basicStructure);
+        
+        success('Created basic project structure');
+      }
+      
+    } catch (err) {
+      error(`Failed to create project structure: ${err.message}`);
       throw err;
     }
   }

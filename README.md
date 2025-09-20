@@ -30,9 +30,12 @@
 ##  Demo
 
 <div align="center">
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/YwC4XlgVfls?si=dSpqoUQNzIl7_XSl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  
+  [![Watch the video](https://img.youtube.com/vi/YwC4XlgVfls/0.jpg)](https://www.youtube.com/watch?v=YwC4XlgVfls)
+  
   <p><em>Watch Packmate in action!</em></p>
 </div>
+
 
 ##  Features
 

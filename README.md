@@ -30,17 +30,12 @@
 ##  Demo
 
 <div align="center">
-
-  <video src="https://github.com/ps-vardhan/packmate/blob/main/asserts/implmentation.mp4?raw=true" 
-         controls 
-         width="600">
+  <video controls width="80%">
+    <source src="assets/implmentation.mp4" type="video/mp4">
+    Your browser does not support the video tag.
   </video>
-
   <p><em>Watch Packmate in action!</em></p>
 </div>
-
-
-
 
 ##  Features
 

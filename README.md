@@ -31,10 +31,14 @@
 
 <div align="center">
 
-  <video src="assets/implmentation.mp4" controls width="600"></video>
+  <video src="https://github.com/ps-vardhan/packmate/blob/main/asserts/implmentation.mp4?raw=true" 
+         controls 
+         width="600">
+  </video>
 
   <p><em>Watch Packmate in action!</em></p>
 </div>
+
 
 
 

@@ -18,6 +18,9 @@
 ##  Demo
 
 <div align="center">
+  <img src="asserts/image.png" alt="Packmate Screenshot" width="80%">
+  <p><em>Packmate in action!</em></p>
+  
   <video controls width="80%">
     <source src="assets/implmentation.mp4" type="video/mp4">
     Your browser does not support the video tag.

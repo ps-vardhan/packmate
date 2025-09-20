@@ -30,10 +30,8 @@
 ##  Demo
 
 <div align="center">
-  <a href="#">
-    <img src="https://via.placeholder.com/800x450/2d2d2d/ffffff?text=Packmate+Demo+Video" alt="Packmate Demo" width="80%">
-  </a>
-  <p><em> Click to watch Packmate in action!</em></p>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/YwC4XlgVfls?si=dSpqoUQNzIl7_XSl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  <p><em>Watch Packmate in action!</em></p>
 </div>
 
 ##  Features

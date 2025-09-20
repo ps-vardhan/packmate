@@ -13,18 +13,6 @@
     <a href="#-example-usage">Example</a> •
     <a href="#-roadmap">Roadmap</a>
   </p>
-
-  <p>
-    <a href="https://www.npmjs.com/package/packmate">
-      <img src="https://img.shields.io/npm/v/packmate?style=flat-square" alt="npm version">
-    </a>
-    <a href="https://github.com/your-username/packmate/blob/main/LICENSE">
-      <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="license">
-    </a>
-    <a href="https://github.com/your-username/packmate/stargazers">
-      <img src="https://img.shields.io/github/stars/your-username/packmate?style=flat-square" alt="stars">
-    </a>
-  </p>
 </div>
 
 ##  Demo

@@ -146,16 +146,3 @@ npm install --save-dev packmate
 ```bash
 npx packmate
 ```
-
-##  Contributing
-
-We love contributions! Here's how you can help:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
-##  License
-
-MIT 
-
----

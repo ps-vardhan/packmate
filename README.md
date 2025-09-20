@@ -19,7 +19,7 @@
 
 <div align="center">
   <video controls width="80%">
-    <source src="assets/implmentation.mp4" type="video/mp4">
+    <source src="asserts/implmentation.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
   <p><em>Watch Packmate in action!</em></p>
